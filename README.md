@@ -1,6 +1,6 @@
 
-# Oliver's Homepage
-Hello, I'm Oliver Engels, a Game Producer and Full-Stack Developer. Welcome to my portfolio website example repository. Please feel free to download, customize, and use it at your own discretion. If you have any questions or inquiries, don't hesitate to reach out to me.
+# Portfolio Web Page
+Hi there! I'm Oliver Engels—Game Producer and Full-Stack Developer. Welcome to my portfolio site's codebase! Dive in, tailor it to your needs, and use it as you like. Questions or thoughts? I'm just an email away `contact@oliverengels.com`.
 
 [https://www.oliverengels.com/](https://www.oliverengels.com/)
 
@@ -19,29 +19,66 @@ yarn dev
 
 -   [Next.js](https://nextjs.org/) - React Framework
 -   [Chakra UI](https://chakra-ui.com/) - Modular and accessible component library for React
+-   [Three.js](https://threejs.org/) - 3D graphics in a web browser using WebGL
 -   [Framer Motion](https://www.framer.com/motion/) - An animation library for React
 -   [FontAwesome Free Version](https://fontawesome.com/) - Icon library and toolkit
 
 ## File Structure and Naming Convention
 
-Project data is stored in the `data/page-data/[Project]` directory, following a straightforward naming convention:
+Project data is stored in the `data/page-data/[Project]` directory, the example.ts file in `data/example.ts` can be used as an example to create projecrts. After which you can add the project to `data/db/articles.ts`:
 
-* The first letter designates its placement as either 'Experience' or 'Tinkering.'
-* The second letter is user-adjustable and can be modified through the filter settings in the ArticleGrid element.
-
-### Example:
-
-File: `eiFirebaseToAws.ts`
-Code: 
-```ts
-<ArticleGrid title="Backend" filter="i" />
+```
+{ id: 'unique_hash', active: true, year: 24, page: 'name_of_project_in_page-data' },
 ```
 
-To showcase the project on the Experience page, assign it the title 'Backend.'
+After this you can add the project to pages:
 
-You can set the thumbnail image for the project in the `public/images/thumbnails` directory. Simply use the project's name, excluding the first two letters. For example, in this case, the thumbnail image should be named `firebasetoaws`, all lower caps.
+```
+{ id: ['39b73b'], sc: 'management', ids: ['34fb2b', 'unique_hash'] },
+```
 
-If you wish to include additional images on the project page, you can place them in the `public/images/article_images` directory. These images can then be referenced in the project object, this is the `eiFirebaseToAws.ts` file in this case. Files can be added to `public/files` and referenced in the same way.
+### Adding a new page
+
+To add a new page you can go into header and add a new navLink:
+
+```
+{ href: '/page_name', label: 'page_label' },
+```
+
+Copy **experience.tsx** and give it a new name and random hash:
+
+```
+import PageContent from '@components/page/page-content';
+import Layout from '../components/layout';
+import useFetchPageData from '@components/page/use-fetch-page-data';
+
+const Experience = () => { <--- Change Function
+    const { page, isLoading } = useFetchPageData(`/api/page?id=unique_hash`); <--- Change unique_hash
+
+    return (
+        <Layout title='Experience'>
+            <PageContent page={isLoading ? null : page} title='Experience' />
+        </Layout>
+    );
+};
+
+export default Experience; <--- Change Function
+```
+
+After that go into **pages.ts** and add another page there:
+
+```
+{
+    id: 'unique_hash',
+    c: 'blog', <--- page name
+    scs: [
+        { id: '39b73b', sc: 'management', ids: ['34fb2b'] }, <-- add page categories
+        { id: '77aa54', sc: 'development', ids: ['34fb2b'] }
+    ],
+},
+```
+
+After which it should be visible in the header.
 
 ## Inspiration
 
