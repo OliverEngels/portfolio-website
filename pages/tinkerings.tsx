@@ -1,13 +1,15 @@
-import data from '../data/ids'
-import ArticleGrid from './article-grid'
-import Layout from '../components/layout'
+import PageContent from '@components/page/page-content';
+import Layout from '../components/layout';
+import useFetchPageData from '@components/page/use-fetch-page-data';
 
-export default function Tinkerings() {
-    const experiences = data.filter(e => e.charAt(0) == "t");
+const Experience = () => {
+    const { page, isLoading } = useFetchPageData(`/api/page?id=e87b50`);
 
     return (
         <Layout title='Tinkerings'>
-            <ArticleGrid data={experiences} title="Code Tinkerings" filter="c" divider={false} />
+            <PageContent page={isLoading ? null : page} title='Tinkerings' />
         </Layout>
-    )
-}
+    );
+};
+
+export default Experience;

@@ -1,13 +1,10 @@
 import { Heading, SimpleGrid, Container, Button, Text, Divider } from '@chakra-ui/react'
-import ArticleBox from '../components/article-box'
-import Segment from '../components/segments'
+import ArticleBox from './article-box'
+import Segment from './segment'
 import Link from 'next/link';
 
-function ArticleGrid({ data = [], filter = 'i', title = "", divider = true, amount = 4, after = 0, showall = true, skipAmount = 0 }) {
-    const filteredData = data.filter(e => e.charAt(1) == filter);
-    const slicedData = filteredData.slice(after, amount + after);
-
-
+function ArticleGrid({ data = [], title = "", divider = true, amount = 4, after = 0, showallId = null }) {
+    const slicedData = amount == 0 ? data : data.slice(after, amount + after);
 
     // Code from: https://stackoverflow.com/a/7273717
     const size = 2;
@@ -23,19 +20,19 @@ function ArticleGrid({ data = [], filter = 'i', title = "", divider = true, amou
                 </Heading>
             </Segment>
 
-            {sortedData.map((sort, j) => (
-                <Segment key={`article-segment-${j}`}>
+            {sortedData.map((sort, i) => (
+                <Segment key={`article-segment-${i}`}>
                     <SimpleGrid columns={[1, 2]} spacingX={4} spacingY={8} pb={4}>
-                        {sort.map((work, i) => (
-                            <ArticleBox work={work} key={`article-${i}`} />
+                        {sort.map((art) => (
+                            <ArticleBox data={art} key={`article-${art.id}`} />
                         ))}
                     </SimpleGrid>
                 </Segment>
             ))}
 
             <Segment>
-                {(filteredData.length > amount && showall) &&
-                    <Link href={{ pathname: '/showall', query: { f: filter, s: skipAmount } }} scroll={false}>
+                {(data.length > amount && showallId) &&
+                    <Link href={{ pathname: '/showall', query: { id: showallId } }} scroll={false}>
                         <Button colorScheme='red' size='sm' mt={6} variant='link'>
                             <Text as='samp'>
                                 Show All
@@ -46,7 +43,7 @@ function ArticleGrid({ data = [], filter = 'i', title = "", divider = true, amou
             </Segment>
 
             <Segment>
-                {divider && <Divider pt={10} />}
+                {divider && <Divider pt={10} borderColor={'gray.500'} />}
             </Segment>
         </Container>
     )

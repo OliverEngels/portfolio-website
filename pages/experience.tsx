@@ -1,13 +1,15 @@
-import Layout from '../components/layout'
-import ArticleGrid from './article-grid'
-import data from '../data/ids'
+import PageContent from '@components/page/page-content';
+import Layout from '../components/layout';
+import useFetchPageData from '@components/page/use-fetch-page-data';
 
-export default function Experience() {
-    const experiences = data.filter(e => e.charAt(0) === "e");
+const Experience = () => {
+    const { page, isLoading } = useFetchPageData(`/api/page?id=2607f4`);
 
     return (
         <Layout title='Experience'>
-            <ArticleGrid data={experiences} title="Projects" filter="i" showall={false} divider={false} />
+            <PageContent page={isLoading ? null : page} title='Experience' />
         </Layout>
-    )
-}
+    );
+};
+
+export default Experience;

@@ -1,4 +1,5 @@
 enum page_types {
+    labels,
     title,
     paragraph,
     picture,

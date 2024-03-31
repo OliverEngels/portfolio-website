@@ -1,98 +1,98 @@
-import { List, ListItem, Container, Divider } from '@chakra-ui/react'
-import Layout from '@components/layout'
-import {
-    Bread,
-    CodeElement,
-    Meta,
-    MetaGray,
-    ColorSeperator,
-    Picture,
-    Title,
-    Video,
-    WebLink,
-    BulletPoints,
-} from '@components/article-elm'
-import P from '@components/paragraph'
-import Segment from '@components/segments'
-import { useEffect, useState } from 'react'
-import page_types from '@data/page-data/types'
-import { isValidUrl } from '@components/helpers'
+import { Container, Skeleton, Stack } from '@chakra-ui/react';
+import Layout from '@components/layout';
+import Segment from '@components/segment';
+import componentMap from '../components/article-sections/article-components';
+import { useRouter } from 'next/router';
+import { ArticleHeader } from '@components/article-sections/article-header';
+import Picture from '@components/article-sections/picture';
+import useFetchPageData from '@components/page/use-fetch-page-data';
+import Interactible from '@components/article-sections/interactible';
+import { useEffect, useState } from 'react';
 
 export default function Article() {
-    const [data, setData] = useState(undefined);
+    const router = useRouter();
     const [articleId, setArticleId] = useState(null);
-    const [title, setTitle] = useState("");
-    const [thumbnail, setThumbnail] = useState('');
 
     useEffect(() => {
-        // Where not using Next.js router here as it will break the 
-        // framer-motion, as the router is updated before the animation is started
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const id = urlParams.get('id');
-        setArticleId(id);
+        if (router.isReady) {
+            setArticleId(router.query.id);
+        }
+    }, [router.isReady]);
 
-        import(`@data/page-data/${id}`).then((e) => setData(e.default));
+    const { page, isLoading, error } = useFetchPageData(articleId ? `/api/article?id=${articleId}` : null);
 
-        const title_sub = id.substring(2, id.length);
-        setThumbnail(title_sub);
-        setTitle(title_sub.match(/[A-Z][a-z]+|[0-9]+/g).join(" "));
-    }, []);
+    useEffect(() => {
+        if (error) {
+            router.push('/error');
+        }
+    }, [error, router]);
 
-    return (
-        <Layout title={title}>
-            <Segment>
-                <Container pb={3} mt={6}>
-                    {articleId && <Bread page={(articleId.charAt(0) == "e" ? "experience" : "tinkerings")}>
-                        {title && title + ' '}
-                        <MetaGray>
-                            {data && data.year}
-                        </MetaGray>
-                    </Bread>}
-                </Container>
-            </Segment>
+    if (isLoading || !articleId) {
+        return (
+            <Container pt={10}>
+                <Skeletons />
+            </Container>
+        );
+    }
 
-            <Segment>
-                <Container>
-                    <Picture src={`/thumbnails/${thumbnail.toLowerCase()}`} alt='' />
-                </Container>
-            </Segment>
-
-            <Segment>
-                <Container pb={3}>
-                    <P>{data && data.desc}</P>
-                </Container>
-            </Segment>
-
-            <Segment>
-                <Container pb={4}>
-                    <List>
-                        {data && data.labels.map((e, i) => (
-                            <ListItem textAlign='left' key={`${e.meta}_${i}`}>
-                                <Meta>{e.meta}</Meta>
-                                <span>{e.meta == 'Download' ? <WebLink link={`files/${e.value}`} title={e.value} /> : isValidUrl(e.value) ? (<WebLink link={e.value} title={e.title} />) : <ColorSeperator value={e.value} />}</span>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Container>
-            </Segment>
-
-            <Segment>
-                {data && data.content.map((e, i) => (
-                    <Container textAlign='left' key={`cont-${i}`}>
-                        {{
-                            [page_types.title]: <Title>{e.value}</Title>,
-                            [page_types.paragraph]: <P>{e.value}</P>,
-                            [page_types.picture]: <Picture src={`article_images/${e.value}`} alt='' />,
-                            [page_types.link]: <WebLink link={e.value} title={e.value} />,
-                            [page_types.video]: <Video src={e.value} title="" />,
-                            [page_types.code]: <CodeElement code={e.value} />,
-                            [page_types.divider]: <Divider mb={4} />,
-                            [page_types.list]: <BulletPoints value={e.value} />
-                        }[e.type]}
-                    </Container>
+    try {
+        return (
+            <Layout title={page.title}>
+                <ArticleHeader page={page.page} title={page.title} year={page.year} />
+                {page.interactible ? <ArticleInteractible project={page.interactible} /> : <ArticlePicture thumb={`${page.thumb}`} />}
+                {page.sections.map((section, index) => (
+                    <ArticleSection key={index} section={section} />
                 ))}
-            </Segment>
-        </Layout>
+            </Layout>
+        );
+    }
+    catch (e) {
+        router.push('/error');
+    }
+}
+
+function ArticlePicture({ thumb }) {
+    return <Segment>
+        <Container>
+            <Picture src={`thumbnails/${thumb}`} alt='' />
+        </Container>
+    </Segment>
+}
+
+function ArticleInteractible({ project }) {
+    return (
+        <Segment>
+            <Container>
+                <Interactible project={project} />
+            </Container>
+        </Segment>
     )
+}
+
+function ArticleSection({ section }) {
+    const SectionComponent = componentMap[section.type];
+
+    if (!SectionComponent) {
+        console.warn(`No component found for type "${section.type}"`);
+        return null;
+    }
+    return (
+        <Segment>
+            <Container pb={4}>
+                <SectionComponent value={section.value} />
+            </Container>
+        </Segment>
+    );
+}
+
+function Skeletons() {
+    return (
+        <Stack>
+            <Skeleton height="40px" width='450px' />
+            <Skeleton height="250px" borderRadius={6} />
+            <Skeleton height="10px" />
+            <Skeleton height="10px" />
+            <Skeleton height="10px" width='150px' />
+        </Stack>
+    );
 }

@@ -11,7 +11,6 @@ function App({ Component, pageProps, router }) {
     const pathname = usePathname();
     const [isAnimating, setIsAnimating] = useState(false);
 
-    // This delay allows Next.js URL parameters to be gathered and provided to the page before the animation begins 
     useEffect(() => {
         setIsAnimating(false);
         setTimeout(() => {

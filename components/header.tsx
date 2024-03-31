@@ -1,166 +1,69 @@
-import {
-    Text,
-    Flex,
-    Heading,
-    useColorMode as mode,
-    Button,
-    Spacer,
-    Hide,
-    Box,
-    Container,
-    MenuButton,
-    IconButton,
-    Menu,
-    MenuItem,
-    MenuList,
-    useBreakpointValue
-} from '@chakra-ui/react'
-import { useColorModeValue as colorModeValue } from '@chakra-ui/react'
-import Link from 'next/link'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faBars,
-    faSun,
-    faMoon
-} from '@fortawesome/free-solid-svg-icons'
+import { Flex, Spacer, Hide, Box, Container, useColorModeValue } from '@chakra-ui/react'
 import { faGithubAlt } from '@fortawesome/free-brands-svg-icons'
-import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import NavLinkButton from './nav-components/nav-link-button'
+import SiteTitle from './nav-components/site-title'
+import ExternalLink from './nav-components/external-link'
+import ColorModeToggle from './nav-components/color-mode-togge'
+import MobileMenuButton from './nav-components/mobile-menu-button'
 
 const Header = props => {
-    const { colorMode, toggleColorMode } = mode()
-    const router = useRouter();
+    const bgColor = useColorModeValue('white', 'gray.800');
+
+    const navLinks = [
+        { href: '/experience', label: 'Experience' },
+    ];
 
     useEffect(() => {
-        if ('scrollRestoration' in history && history.scrollRestoration !== 'manual') {
-            history.scrollRestoration = 'manual';
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
         }
     }, []);
 
-    const variant = useBreakpointValue(
-        {
-            base: 'O.Engels',
-            sm: 'Oliver Engels'
-        }
-    );
+    const renderNavLinks = () =>
+        navLinks.map(({ href, label }) => (
+            <NavLinkButton key={href} href={href}>
+                {label}
+            </NavLinkButton>
+        ));
 
-    return (
-        <Box position={'fixed'} zIndex={5} width={'100%'} height={70}>
+    const renderHeaderBg = () =>
+        <>
             <Box
                 position={'absolute'}
-                backgroundColor={colorModeValue('white', 'gray.800')}
+                backgroundColor={bgColor}
                 opacity={0.25}
                 height={70}
                 width={'100vw'}
             />
             <Box
                 position={'absolute'}
-                backgroundColor={colorModeValue('white', 'gray.800')}
+                backgroundColor={bgColor}
                 height={70}
                 width={'100vw'}
                 bg='none'
                 backdropFilter='auto'
                 backdropBlur='10px'
             />
+        </>
 
+    return (
+        <Box position={'fixed'} zIndex={5} width={'100%'} height={70}>
+            {renderHeaderBg()}
             <Container maxW='container.xl'>
-                <Flex as='nav' wrap='wrap' p={6} pl={{ base: 0, sm: 6 }} pr={{ base: 0, sm: 6 }} {...props}>
-                    <Link href='/' passHref scroll={false}>
-                        <Flex align='center' mr={6} cursor='pointer' position="relative">
-                            <Heading
-                                as='h1'
-                                size='md'
-                                p={1}
-                                letterSpacing={'tighter'}>
-                                <Text>
-                                    {variant}
-                                </Text>
-                            </Heading>
-                        </Flex>
-                    </Link>
-
-                    <Hide below='md'>
-                        <Link href='/experience' passHref scroll={false}>
-                            <Button mr={6} size='sm' variant='link' backgroundColor={router.pathname == "/experience" && "red.300"} p={2}>
-                                <Text as='samp'
-                                    textDecoration={router.pathname == "/experience" && "underline"}
-                                    color={router.pathname == "/experience" && "#000"}>
-                                    Experience{' '}
-                                </Text>
-                            </Button>
-                        </Link>
-                        <Link href='/tinkerings' passHref scroll={false}>
-                            <Button mr={6} size='sm' variant='link' backgroundColor={router.pathname == "/tinkerings" && "red.300"} p={2}>
-                                <Text as='samp'
-                                    textDecoration={router.pathname == "/tinkerings" && "underline"}
-                                    color={router.pathname == "/tinkerings" && "#000"}>
-                                    Tinkerings{' '}
-                                </Text>
-                            </Button>
-                        </Link>
-                        <Link
-                            href=''
-                            passHref scroll={false}>
-                            <Button mr={2} size='sm' variant='link' colorScheme='red' p={2}>
-                                <Box mr={2}>
-                                    <FontAwesomeIcon icon={faGithubAlt} />
-                                </Box>
-                                <Text as='samp'>
-                                    Source
-                                </Text>
-                            </Button>
-                        </Link>
-                    </Hide>
+                <Flex as='nav' wrap='nowrap' p={6} pl={{ base: 0, md: 6 }} pr={{ base: 0, md: 6 }} {...props}>
+                    <Flex alignItems="center" gap={2} wrap='wrap' overflow='hidden' height={35}>
+                        <SiteTitle />
+                        <Hide below='md'>
+                            {renderNavLinks()}
+                            <ExternalLink href="https://github.com/OliverEngels/portfolio-website" label="Source" icon={faGithubAlt} />
+                        </Hide>
+                    </Flex>
 
                     <Spacer />
 
-                    <Button
-                        aria-label='color-mode'
-                        onClick={toggleColorMode}
-                        colorScheme={colorModeValue('blue', 'orange')}
-                        alignSelf='self-end'
-                        mr='2'
-                        height={35}
-                        width={35}>
-                        <FontAwesomeIcon
-                            icon={colorModeValue(faMoon, faSun)}
-                            color={colorModeValue('white', 'black')}
-                        />
-                    </Button>
-
-                    <Menu>
-                        <MenuButton
-                            height={35}
-                            width={35}
-                            display={{ base: 'block', md: 'none' }}
-                            as={IconButton}
-                            aria-label='Options'
-                            icon={
-                                <FontAwesomeIcon
-                                    icon={faBars}
-                                    inverse={colorMode == 'dark'}
-                                />
-                            }
-                            variant='outline'
-                        />
-
-                        <MenuList>
-                            <Link href='/' passHref scroll={false}>
-                                <MenuItem>About</MenuItem>
-                            </Link>
-                            <Link href='/experience' passHref scroll={false}>
-                                <MenuItem>Experience</MenuItem>
-                            </Link>
-                            <Link href='/tinkerings' passHref scroll={false}>
-                                <MenuItem>Tinkerings</MenuItem>
-                            </Link>
-                            <Link
-                                href='https://github.com/OliverEngels/digitaltinkerer-website'
-                                passHref scroll={false}>
-                                <MenuItem>Source Code</MenuItem>
-                            </Link>
-                        </MenuList>
-                    </Menu>
+                    <ColorModeToggle />
+                    <MobileMenuButton navLinks={navLinks} />
                 </Flex>
             </Container>
         </Box>
