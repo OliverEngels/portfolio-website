@@ -1,8 +1,18 @@
 
-# Portfolio Web Page
+# Simple to the point Portfolio Web Page
+
+![Image description](/public/readme_files/portfolio_screens.png)
+
 Hi there! I'm Oliver Engels—Game Producer and Full-Stack Developer. Welcome to my portfolio site's codebase! Dive in, tailor it to your needs, and use it as you like. Questions or thoughts? I'm just an email away `contact@oliverengels.com`.
 
-[https://www.oliverengels.com/](https://www.oliverengels.com/)
+In Action: [https://www.oliverengels.com/](https://www.oliverengels.com/)
+
+If you like what I do and want to thank me, just buy me a coffee :-D
+
+<a href="https://www.buymeacoffee.com/oliverengels" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174" style="border-radius:5px;">
+</a>
+
 
 ## Run
 
